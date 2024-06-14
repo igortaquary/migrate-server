@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/database/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
+import { JwtData } from './dto/jwt-data.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload: JwtData = {
+      sub: user.id,
+      id: user.id,
+      email: user.email,
+    };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { UpdateUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/database/entities/user.entity';
@@ -12,7 +12,11 @@ export class UserService {
   ) {}
 
   create(user: Partial<User>) {
-    return this.usersRepository.insert(user);
+    try {
+      return this.usersRepository.insert(user);
+    } catch (err) {
+      throw new ConflictException();
+    }
   }
 
   findOne(uuid: string) {
