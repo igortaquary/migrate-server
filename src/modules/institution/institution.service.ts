@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { UpdateInstitutionDto } from './dto/update-institution.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Institution } from 'src/database/entities/institution.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class InstitutionService {
+  constructor(
+    @InjectRepository(Institution)
+    private institutionRepository: Repository<Institution>,
+  ) {}
+
   create(createInstitutionDto: CreateInstitutionDto) {
     console.log(createInstitutionDto);
-    return 'This action adds a new institution';
+    return this.institutionRepository.insert(createInstitutionDto);
   }
 
   findAll() {

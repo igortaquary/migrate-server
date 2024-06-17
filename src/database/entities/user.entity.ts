@@ -17,10 +17,10 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
-  @Column()
+  @Column({ select: false })
   salt: string;
 
   @Column()
@@ -32,6 +32,6 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   deletedAt: Date;
 }

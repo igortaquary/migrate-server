@@ -4,6 +4,7 @@ import { SignInDto } from './dto/sign-in.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SignUpDto } from './dto/sign-up.dto';
 import { Public } from './auth.guard';
+import { DocLogin } from './auth.doc';
 
 @ApiTags('Authentication')
 @Public()
@@ -12,12 +13,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @DocLogin()
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @Post('sign-up')
   signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(signUpDto);
+    try {
+      return this.authService.signUp(signUpDto);
+    } catch (error) {
+      throw error;
+    }
   }
 }

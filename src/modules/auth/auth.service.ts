@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/database/entities/user.entity';
@@ -28,6 +32,7 @@ export class AuthService {
       sub: user.id,
       id: user.id,
       email: user.email,
+      name: user.name,
     };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -35,6 +40,11 @@ export class AuthService {
   }
 
   async signUp(payload: SignUpDto) {
+    const foundUser = await this.userService.findOneByEmail(payload.email);
+    if (foundUser) {
+      throw new ConflictException();
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashPass = await bcrypt.hash(payload.password, salt);
 

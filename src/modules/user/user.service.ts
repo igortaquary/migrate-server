@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,23 +12,26 @@ export class UserService {
   ) {}
 
   create(user: Partial<User>) {
-    try {
-      return this.usersRepository.insert(user);
-    } catch (err) {
-      throw new ConflictException();
-    }
+    return this.usersRepository.insert(user);
   }
 
-  findOne(uuid: string) {
-    return this.usersRepository.findOne({ where: { id: uuid } });
+  findOne(id: string) {
+    return this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'name', 'email', 'phone', 'gender'],
+    });
   }
 
+  // Used by auth service
   findOneByEmail(email: string) {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.usersRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'name', 'password'],
+    });
   }
 
-  update(uuid: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${uuid} user ${updateUserDto}`;
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user ${updateUserDto}`;
   }
 
   remove(id: string) {
