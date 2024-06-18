@@ -13,6 +13,7 @@ import { User } from './database/entities/user.entity';
 import { Institution } from './database/entities/institution.entity';
 import { Lodge } from './database/entities/lodge.entity';
 import { Photo } from './database/entities/photo.entity';
+import { Location } from './database/entities/location.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { Photo } from './database/entities/photo.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_SCHEMA'),
-        entities: [User, Institution, Lodge, Photo],
+        entities: [User, Institution, Lodge, Photo, Location],
         synchronize: true,
         logging: 'all',
       }),

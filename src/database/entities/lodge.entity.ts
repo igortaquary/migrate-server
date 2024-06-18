@@ -3,13 +3,17 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { Institution } from './institution.entity';
 import { Photo } from './photo.entity';
 import { User } from './user.entity';
+import { Location } from './location.entity';
 
 export enum LodgeType {
   ENTIRE = 0,
@@ -40,14 +44,21 @@ export class Lodge {
   @Column({ enum: SpaceType, type: 'enum', nullable: false })
   space: SpaceType;
 
+  @Column({ nullable: true })
+  distanceFromInstitution: number;
+
+  @OneToOne(() => Location, (location) => location.id, { cascade: true })
+  @JoinColumn()
+  location: Relation<Location>;
+
   @ManyToOne(() => Institution, (institution) => institution.id)
-  institution: Institution;
+  institution: Relation<Institution>;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
-  user: User;
+  user: Relation<User>;
 
   @OneToMany(() => Photo, (photo) => photo.lodge)
-  photos: Photo[];
+  photos: Relation<Photo>[];
 
   @CreateDateColumn()
   createdAt: Date;

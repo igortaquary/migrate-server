@@ -1,10 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Location } from './location.entity';
 
 @Entity()
 export class Institution {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
+
+  @OneToOne(() => Location, (loc) => loc.id, { nullable: false })
+  location: Location;
 }
