@@ -11,6 +11,9 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate/paginate';
 import { SearchLodgeDto } from './dto/search-lodge.dto';
 import { Location } from 'src/database/entities/location.entity';
+import { getCoordinates } from 'src/utils/getCoordinates';
+import { getDistanceFromLatLonInKm } from 'src/utils/latLngDistance/latLngDistance';
+import { Institution } from 'src/database/entities/institution.entity';
 
 @Injectable()
 export class LodgeService {
@@ -24,7 +27,11 @@ export class LodgeService {
     const location = lodgeDto.location;
     lodge.location = null;
     return this.lodgeRepository.manager.transaction(async (manager) => {
-      const locInsert = await manager.insert(Location, location);
+      const coords = await getCoordinates(location);
+      const locInsert = await manager.insert(Location, {
+        ...location,
+        ...coords,
+      });
       return manager.insert(Lodge, {
         ...lodge,
         institution: { id: lodgeDto.institutionId },
@@ -42,6 +49,7 @@ export class LodgeService {
     const [data, count] = await this.lodgeRepository.findAndCount({
       where: whereOptions,
       select: ['id', 'type', 'title', 'description', 'createdAt'],
+      relations: { institution: true, location: true },
       take,
       skip,
     });
@@ -56,7 +64,7 @@ export class LodgeService {
   listByUserId(userId: string) {
     return this.lodgeRepository.find({
       where: { user: { id: userId } },
-      relations: { location: true },
+      relations: { location: true, institution: true },
       order: { createdAt: 'desc' },
     });
   }
@@ -68,22 +76,39 @@ export class LodgeService {
   async update(id: string, updateLodgeDto: UpdateLodgeDto, userId?: string) {
     const lodgeToUpdate = await this.lodgeRepository.findOne({
       where: { id },
-      relations: { user: true },
+      relations: { user: true, location: true },
     });
     if (!lodgeToUpdate) throw new NotFoundException();
 
     if (lodgeToUpdate.user.id !== userId) throw new UnauthorizedException();
 
-    // return this.lodgeRepository.update(id, updateLodgeDto);
-    const lodge = updateLodgeDto;
-    const location = updateLodgeDto.location;
-    lodge.location = null;
-    lodge.institutionId = null;
+    const { location, institutionId, ...lodge } = updateLodgeDto;
+
     return this.lodgeRepository.manager.transaction(async (manager) => {
-      if (location.id) await manager.save(Location, location);
-      return manager.update(Lodge, id, {
+      if (location?.id) {
+        const coords = await getCoordinates(location);
+        await manager.update(Location, location.id, { ...location, ...coords });
+        if (
+          location.latitude !== coords.latitude ||
+          location.longitude !== coords.longitude
+        ) {
+          const institution = await manager.findOne(Institution, {
+            where: { id: institutionId },
+            relations: { location: true },
+          });
+          lodgeToUpdate.distanceFromInstitution = getDistanceFromLatLonInKm(
+            coords.latitude,
+            coords.longitude,
+            institution.location.latitude,
+            institution.location.longitude,
+          );
+        }
+      }
+      return manager.save(Lodge, {
         ...lodge,
-        // institution: { id: updateLodgeDto.institutionId },
+        id,
+        distanceFromInstitution: lodgeToUpdate.distanceFromInstitution,
+        institution: { id: institutionId },
       });
     });
   }

@@ -35,8 +35,14 @@ export class Lodge {
   @Column({ nullable: false })
   title: string;
 
-  @Column()
+  @Column({ type: 'text' })
   description: string;
+
+  @Column({ nullable: true })
+  price: number;
+
+  @Column({ default: 'any' })
+  gender: 'male' | 'female' | 'any';
 
   @Column({ enum: LodgeType, type: 'enum', nullable: false })
   type: LodgeType;
@@ -47,11 +53,13 @@ export class Lodge {
   @Column({ nullable: true })
   distanceFromInstitution: number;
 
-  @OneToOne(() => Location, (location) => location.id, { cascade: true })
+  @OneToOne(() => Location, { cascade: true })
   @JoinColumn()
   location: Relation<Location>;
 
-  @ManyToOne(() => Institution, (institution) => institution.id)
+  @ManyToOne(() => Institution, (institution) => institution.id, {
+    nullable: true,
+  })
   institution: Relation<Institution>;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false })

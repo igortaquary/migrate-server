@@ -1,9 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { LocationDto } from 'src/modules/lodge/dto/location.dto';
 
 export class CreateInstitutionDto {
   @ApiProperty({ type: 'string' })
+  @Expose()
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => LocationDto)
+  location: LocationDto;
 }

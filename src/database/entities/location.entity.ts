@@ -6,6 +6,7 @@ import {
   Relation,
 } from 'typeorm';
 import { Lodge } from './lodge.entity';
+import { Institution } from './institution.entity';
 
 @Entity()
 export class Location {
@@ -27,7 +28,7 @@ export class Location {
   @Column()
   district: string;
 
-  @Column()
+  @Column({ default: 'Brasil' })
   country: string;
 
   @Column({ nullable: true })
@@ -38,4 +39,7 @@ export class Location {
 
   @OneToOne(() => Lodge, (lodge) => lodge.location)
   lodge: Relation<Lodge>;
+
+  @OneToOne(() => Institution, (institution) => institution.location)
+  institution: Relation<Institution>;
 }

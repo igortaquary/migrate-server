@@ -30,7 +30,7 @@ export class InstitutionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.institutionService.findOne(+id);
+    return this.institutionService.findOne(id);
   }
 
   @Patch(':id')
@@ -38,11 +38,11 @@ export class InstitutionController {
     @Param('id') id: string,
     @Body() updateInstitutionDto: UpdateInstitutionDto,
   ) {
-    return this.institutionService.update(+id, updateInstitutionDto);
+    return this.institutionService.update(id, updateInstitutionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.institutionService.remove(+id);
+    return this.institutionService.remove(id);
   }
 }

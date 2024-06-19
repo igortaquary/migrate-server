@@ -13,6 +13,9 @@ async function bootstrap() {
       forbidUnknownValues: true,
       forbidNonWhitelisted: true,
       whitelist: true,
+      transformOptions: {
+        excludeExtraneousValues: true,
+      },
     }),
   );
 

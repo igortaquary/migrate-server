@@ -1,4 +1,11 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import { Location } from './location.entity';
 
 @Entity()
@@ -9,6 +16,7 @@ export class Institution {
   @Column({ nullable: false })
   name: string;
 
-  @OneToOne(() => Location, (loc) => loc.id, { nullable: false })
-  location: Location;
+  @OneToOne(() => Location, { nullable: false, cascade: true })
+  @JoinColumn()
+  location: Relation<Location>;
 }
