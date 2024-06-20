@@ -20,10 +20,6 @@ export class AuthController {
 
   @Post('sign-up')
   signUp(@Body() signUpDto: SignUpDto) {
-    try {
-      return this.authService.signUp(signUpDto);
-    } catch (error) {
-      throw error;
-    }
+    return this.authService.signUp(signUpDto);
   }
 }

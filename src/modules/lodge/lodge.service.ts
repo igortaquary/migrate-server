@@ -6,7 +6,7 @@ import {
 import { CreateLodgeDto } from './dto/create-lodge.dto';
 import { UpdateLodgeDto } from './dto/update-lodge.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Lodge } from 'src/database/entities/lodge.entity';
+import { Lodge, LodgeStatus } from 'src/database/entities/lodge.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate/paginate';
 import { SearchLodgeDto } from './dto/search-lodge.dto';
@@ -64,7 +64,9 @@ export class LodgeService {
     const take = 10;
     const skip = (page - 1) * take;
 
-    const whereOptions: FindOptionsWhere<Lodge> = {};
+    const whereOptions: FindOptionsWhere<Lodge> = {
+      status: LodgeStatus.ACTIVE,
+    };
 
     if (gender) whereOptions.gender = gender;
     if (space) whereOptions.space = space;
@@ -104,7 +106,10 @@ export class LodgeService {
   }
 
   findOne(id: string) {
-    return this.lodgeRepository.findOne({ where: { id } });
+    return this.lodgeRepository.findOne({
+      where: { id },
+      relations: { location: true, institution: { location: true } },
+    });
   }
 
   async update(id: string, updateLodgeDto: UpdateLodgeDto, userId?: string) {

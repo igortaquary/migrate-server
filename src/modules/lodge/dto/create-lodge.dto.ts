@@ -9,7 +9,11 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { LodgeType, SpaceType } from 'src/database/entities/lodge.entity';
+import {
+  DirectionMode,
+  LodgeType,
+  SpaceType,
+} from 'src/database/entities/lodge.entity';
 import { LocationDto } from './location.dto';
 import { Expose, Type } from 'class-transformer';
 
@@ -35,6 +39,11 @@ export class CreateLodgeDto {
   @Expose()
   @IsEnum(SpaceType)
   space: SpaceType;
+
+  @ApiProperty({ type: 'enum', enum: DirectionMode })
+  @Expose()
+  @IsEnum(DirectionMode)
+  directionMode: DirectionMode;
 
   @ApiProperty({ type: 'string' })
   @IsString()

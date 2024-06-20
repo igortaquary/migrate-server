@@ -34,6 +34,7 @@ export class LodgeController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.lodgeService.findOne(id);
   }

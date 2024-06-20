@@ -27,6 +27,19 @@ export enum SpaceType {
   OTHER = 3,
 }
 
+export enum DirectionMode {
+  DRIVING = 'driving',
+  WALKING = 'walking',
+  BICYCLING = 'bicycling',
+  TRANSIT = 'transit',
+}
+
+export enum LodgeStatus {
+  ACTIVE = 1,
+  ANALYSING = 2,
+  BLOCKED = 3,
+}
+
 @Entity()
 export class Lodge {
   @PrimaryGeneratedColumn('uuid')
@@ -53,8 +66,19 @@ export class Lodge {
   @Column({ enum: SpaceType, type: 'enum', nullable: false })
   space: SpaceType;
 
+  @Column({
+    enum: LodgeStatus,
+    type: 'enum',
+    nullable: false,
+    default: LodgeStatus.ANALYSING,
+  })
+  status: LodgeStatus;
+
   @Column({ nullable: true })
   distanceFromInstitution: number;
+
+  @Column({ enum: DirectionMode, type: 'enum', nullable: true })
+  directionMode: DirectionMode;
 
   @OneToOne(() => Location, { cascade: true })
   @JoinColumn()

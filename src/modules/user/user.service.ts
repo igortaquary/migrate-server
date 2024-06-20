@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/database/entities/user.entity';
+import { User } from '../../database/entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -11,8 +11,9 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) {}
 
-  create(user: Partial<User>) {
-    return this.usersRepository.insert(user);
+  async create(user: Partial<User>): Promise<string> {
+    const insertResult = await this.usersRepository.insert(user);
+    return insertResult.identifiers[0].id;
   }
 
   findOne(id: string) {
@@ -23,7 +24,7 @@ export class UserService {
   }
 
   // Used by auth service
-  findOneByEmail(email: string) {
+  findOneByEmail(email: string): Promise<Partial<User>> {
     return this.usersRepository.findOne({
       where: { email },
       select: ['id', 'email', 'name', 'password'],

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 import { LodgeModule } from './modules/lodge/lodge.module';
 import { InstitutionModule } from './modules/institution/institution.module';
@@ -40,7 +39,6 @@ import { DataSource } from 'typeorm';
     InstitutionModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
