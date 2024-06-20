@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
+  IsIn,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -34,6 +36,26 @@ export class CreateLodgeDto {
   @IsEnum(SpaceType)
   space: SpaceType;
 
+  @ApiProperty({ type: 'string' })
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  @IsIn(['phone', 'email', 'all'])
+  contactInfo: 'phone' | 'email' | 'all';
+
+  @ApiProperty({ type: 'string' })
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  @IsIn(['male', 'female', 'any'])
+  gender: 'male' | 'female' | 'any';
+
+  @ApiProperty({ type: 'number' })
+  @IsNumber()
+  @IsOptional()
+  @Expose()
+  price: number;
+
   @ApiProperty()
   @Expose()
   @IsNotEmpty()
@@ -48,4 +70,6 @@ export class CreateLodgeDto {
   @IsNotEmpty()
   @IsOptional()
   institutionId: string;
+
+  distanceFromInstitution: number;
 }

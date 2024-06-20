@@ -14,6 +14,7 @@ import { Institution } from './database/entities/institution.entity';
 import { Lodge } from './database/entities/lodge.entity';
 import { Photo } from './database/entities/photo.entity';
 import { Location } from './database/entities/location.entity';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -41,4 +42,6 @@ import { Location } from './database/entities/location.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

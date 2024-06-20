@@ -16,15 +16,15 @@ import { User } from './user.entity';
 import { Location } from './location.entity';
 
 export enum LodgeType {
-  ENTIRE = 0,
-  ROOM = 1,
-  SHARED_ROOM = 2,
+  ENTIRE = 1,
+  ROOM = 2,
+  SHARED_ROOM = 3,
 }
 
 export enum SpaceType {
-  APARTMENT = 0,
-  HOUSE = 1,
-  OTHER = 2,
+  APARTMENT = 1,
+  HOUSE = 2,
+  OTHER = 3,
 }
 
 @Entity()
@@ -43,6 +43,9 @@ export class Lodge {
 
   @Column({ default: 'any' })
   gender: 'male' | 'female' | 'any';
+
+  @Column({ default: 'all' })
+  contactInfo: 'phone' | 'email' | 'all';
 
   @Column({ enum: LodgeType, type: 'enum', nullable: false })
   type: LodgeType;

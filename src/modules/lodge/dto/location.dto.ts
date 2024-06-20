@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
+import { BR_STATES } from 'src/database/entities/location.entity';
 
 export class LocationDto {
   @ApiProperty()
@@ -22,6 +23,7 @@ export class LocationDto {
   @ApiProperty()
   @IsString()
   @Expose()
+  @IsIn(BR_STATES)
   state: string;
 
   @ApiProperty()
@@ -34,10 +36,11 @@ export class LocationDto {
   @Expose()
   district: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'Brasil' })
   @IsString()
+  @IsOptional()
   @Expose()
-  country: string;
+  country: string = 'Brasil';
 
   latitude: string;
   longitude: string;

@@ -32,6 +32,12 @@ export class InstitutionService {
     });
   }
 
+  findByState(state: string) {
+    return this.institutionRepository.find({
+      where: { location: { state } },
+    });
+  }
+
   findAll() {
     return this.institutionRepository.find();
   }

@@ -6,11 +6,11 @@ export const getCoordinates = async (location: Partial<Location>) => {
   try {
     const complete_address =
       location.address +
-      ' ' +
+      ', ' +
       location.district +
-      ' ' +
+      ', ' +
       location.city +
-      ' ' +
+      ', ' +
       location.state;
 
     const result = await axios.get(
@@ -31,5 +31,5 @@ export const getCoordinates = async (location: Partial<Location>) => {
   } catch (err) {
     console.error(err);
   }
-  return undefined;
+  return {};
 };

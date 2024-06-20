@@ -25,13 +25,25 @@ export class LodgeService {
   create(lodgeDto: CreateLodgeDto & { userId: string }) {
     const lodge = lodgeDto;
     const location = lodgeDto.location;
-    lodge.location = null;
+    lodge.location = undefined;
     return this.lodgeRepository.manager.transaction(async (manager) => {
       const coords = await getCoordinates(location);
       const locInsert = await manager.insert(Location, {
         ...location,
         ...coords,
       });
+      if (lodge.institutionId && coords.latitude) {
+        const institution = await manager.findOne(Institution, {
+          where: { id: lodgeDto.institutionId },
+          relations: { location: true },
+        });
+        lodge.distanceFromInstitution = getDistanceFromLatLonInKm(
+          coords.latitude,
+          coords.longitude,
+          institution.location.latitude,
+          institution.location.longitude,
+        );
+      }
       return manager.insert(Lodge, {
         ...lodge,
         institution: { id: lodgeDto.institutionId },
@@ -41,14 +53,36 @@ export class LodgeService {
     });
   }
 
-  async search({ page }: SearchLodgeDto) {
+  async search({
+    page = 1,
+    gender,
+    space,
+    institutionId,
+    type,
+    state,
+  }: SearchLodgeDto) {
     const take = 10;
     const skip = (page - 1) * take;
 
     const whereOptions: FindOptionsWhere<Lodge> = {};
+
+    if (gender) whereOptions.gender = gender;
+    if (space) whereOptions.space = space;
+    if (type) whereOptions.type = type;
+    if (institutionId) whereOptions.institution = { id: institutionId };
+    if (state) whereOptions.location = { state };
+
     const [data, count] = await this.lodgeRepository.findAndCount({
       where: whereOptions,
-      select: ['id', 'type', 'title', 'description', 'createdAt'],
+      select: [
+        'id',
+        'type',
+        'title',
+        'description',
+        'gender',
+        'price',
+        'createdAt',
+      ],
       relations: { institution: true, location: true },
       take,
       skip,
@@ -89,14 +123,15 @@ export class LodgeService {
         const coords = await getCoordinates(location);
         await manager.update(Location, location.id, { ...location, ...coords });
         if (
-          location.latitude !== coords.latitude ||
-          location.longitude !== coords.longitude
+          coords.latitude &&
+          (location.latitude !== coords.latitude ||
+            location.longitude !== coords.longitude)
         ) {
           const institution = await manager.findOne(Institution, {
             where: { id: institutionId },
             relations: { location: true },
           });
-          lodgeToUpdate.distanceFromInstitution = getDistanceFromLatLonInKm(
+          lodge.distanceFromInstitution = getDistanceFromLatLonInKm(
             coords.latitude,
             coords.longitude,
             institution.location.latitude,
@@ -107,7 +142,6 @@ export class LodgeService {
       return manager.save(Lodge, {
         ...lodge,
         id,
-        distanceFromInstitution: lodgeToUpdate.distanceFromInstitution,
         institution: { id: institutionId },
       });
     });

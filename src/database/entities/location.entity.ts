@@ -1,12 +1,34 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
-import { Lodge } from './lodge.entity';
-import { Institution } from './institution.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+export const BR_STATES = [
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
+];
 
 @Entity()
 export class Location {
@@ -19,7 +41,7 @@ export class Location {
   @Column()
   address: string;
 
-  @Column()
+  @Column({ length: 2 })
   state: string;
 
   @Column()
@@ -37,9 +59,9 @@ export class Location {
   @Column({ nullable: true })
   longitude: string;
 
-  @OneToOne(() => Lodge, (lodge) => lodge.location)
-  lodge: Relation<Lodge>;
+  /* @OneToOne(() => Lodge, (lodge) => lodge.location)
+  lodge: Relation<Lodge>; */
 
-  @OneToOne(() => Institution, (institution) => institution.location)
-  institution: Relation<Institution>;
+  /* @OneToOne(() => Institution, (institution) => institution.location)
+  institution: Relation<Institution>; */
 }
