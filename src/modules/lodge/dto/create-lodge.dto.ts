@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEnum,
   IsIn,
   IsNotEmpty,
@@ -7,6 +8,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -16,6 +18,7 @@ import {
 } from 'src/database/entities/lodge.entity';
 import { LocationDto } from './location.dto';
 import { Expose, Type } from 'class-transformer';
+import { PhotoDto } from '../../photo/dto/photo.dto';
 
 export class CreateLodgeDto {
   @ApiProperty({ type: 'string' })
@@ -43,6 +46,7 @@ export class CreateLodgeDto {
   @ApiProperty({ type: 'enum', enum: DirectionMode })
   @Expose()
   @IsEnum(DirectionMode)
+  @ValidateIf((obj) => obj.institutionId)
   directionMode: DirectionMode;
 
   @ApiProperty({ type: 'string' })
@@ -79,6 +83,14 @@ export class CreateLodgeDto {
   @IsNotEmpty()
   @IsOptional()
   institutionId: string;
+
+  @ApiProperty({ type: [PhotoDto] })
+  @Expose()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PhotoDto)
+  @IsOptional()
+  photos?: PhotoDto[];
 
   distanceFromInstitution: number;
 }

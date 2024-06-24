@@ -14,13 +14,17 @@ import { Location } from 'src/database/entities/location.entity';
 import { getCoordinates } from 'src/utils/getCoordinates';
 import { getDistanceFromLatLonInKm } from 'src/utils/latLngDistance/latLngDistance';
 import { Institution } from 'src/database/entities/institution.entity';
+import { StorageProvider } from 'src/config/minio.config';
 
 @Injectable()
 export class LodgeService {
+  private storageProvider: StorageProvider;
   constructor(
     @InjectRepository(Lodge)
     private lodgeRepository: Repository<Lodge>,
-  ) {}
+  ) {
+    this.storageProvider = new StorageProvider();
+  }
 
   create(lodgeDto: CreateLodgeDto & { userId: string }) {
     const lodge = lodgeDto;
@@ -44,12 +48,13 @@ export class LodgeService {
           institution.location.longitude,
         );
       }
-      return manager.insert(Lodge, {
+      const { identifiers } = await manager.insert(Lodge, {
         ...lodge,
         institution: { id: lodgeDto.institutionId },
         user: { id: lodgeDto.userId },
         location: { id: locInsert.identifiers[0].id },
       });
+      return identifiers[0].id;
     });
   }
 
@@ -108,8 +113,30 @@ export class LodgeService {
   findOne(id: string) {
     return this.lodgeRepository.findOne({
       where: { id },
-      relations: { location: true, institution: { location: true } },
+      relations: {
+        location: true,
+        institution: { location: true },
+      },
     });
+  }
+
+  async getContactInfo(id: string) {
+    const result = await this.lodgeRepository.findOne({
+      where: { id },
+      relations: {
+        user: true,
+      },
+    });
+    if (result && result.user) {
+      if (result.contactInfo === 'email') {
+        return { email: result.user.email };
+      } else if (result.contactInfo === 'phone') {
+        return { phone: result.user.phone };
+      } else {
+        return { phone: result.user.phone, email: result.user.email };
+      }
+    }
+    throw new NotFoundException();
   }
 
   async update(id: string, updateLodgeDto: UpdateLodgeDto, userId?: string) {

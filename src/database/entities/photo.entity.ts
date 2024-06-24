@@ -12,10 +12,10 @@ export class Photo {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 512 })
   url: string;
 
-  @Column()
+  @Column({ type: 'int' })
   order: number;
 
   @CreateDateColumn()

@@ -15,11 +15,15 @@ import { SearchLodgeDto } from './dto/search-lodge.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Public, User } from '../auth/auth.guard';
 import { JwtData } from '../auth/dto/jwt-data.dto';
+import { PhotoService } from '../photo/photo.service';
 
 @ApiTags('Lodge')
 @Controller('lodge')
 export class LodgeController {
-  constructor(private readonly lodgeService: LodgeService) {}
+  constructor(
+    private readonly lodgeService: LodgeService,
+    private readonly photoService: PhotoService,
+  ) {}
 
   @Get()
   @Public()
@@ -39,10 +43,21 @@ export class LodgeController {
     return this.lodgeService.findOne(id);
   }
 
+  @Get(':id/contact')
+  @ApiBearerAuth()
+  getContactInfo(@Param('id') id: string) {
+    return this.lodgeService.getContactInfo(id);
+  }
+
   @Post()
   @ApiBearerAuth()
-  create(@User() user: JwtData, @Body() createLodgeDto: CreateLodgeDto) {
-    return this.lodgeService.create({ ...createLodgeDto, userId: user.id });
+  async create(@User() user: JwtData, @Body() createLodgeDto: CreateLodgeDto) {
+    const lodgeId = await this.lodgeService.create({
+      ...createLodgeDto,
+      userId: user.id,
+    });
+    //await this.photoService.saveLodgePhotos(lodgeId, createLodgeDto.photos);
+    return { lodgeId };
   }
 
   @Patch(':id')
@@ -52,7 +67,8 @@ export class LodgeController {
     @Param('id') id: string,
     @Body() updateLodgeDto: UpdateLodgeDto,
   ) {
-    return this.lodgeService.update(id, updateLodgeDto, user.id);
+    return this.photoService.saveLodgePhotos(id, updateLodgeDto.photos);
+    // return this.lodgeService.update(id, updateLodgeDto, user.id);
   }
 
   @Delete(':id')
