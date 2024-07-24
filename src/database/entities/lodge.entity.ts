@@ -70,7 +70,7 @@ export class Lodge {
     enum: LodgeStatus,
     type: 'enum',
     nullable: false,
-    default: LodgeStatus.ANALYSING,
+    default: LodgeStatus.ACTIVE,
   })
   status: LodgeStatus;
 

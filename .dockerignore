@@ -1,0 +1,8 @@
+coverage
+test
+node_modules
+dist
+*.spec.ts
+
+.dockerignore
+npm-debug.log

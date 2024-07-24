@@ -14,6 +14,7 @@ import { Lodge } from './database/entities/lodge.entity';
 import { Photo } from './database/entities/photo.entity';
 import { Location } from './database/entities/location.entity';
 import { DataSource } from 'typeorm';
+import { PhotoModule } from './modules/photo/photo.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { DataSource } from 'typeorm';
     UserModule,
     LodgeModule,
     InstitutionModule,
+    PhotoModule,
   ],
   controllers: [AppController],
 })

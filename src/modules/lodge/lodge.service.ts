@@ -14,17 +14,15 @@ import { Location } from 'src/database/entities/location.entity';
 import { getCoordinates } from 'src/utils/getCoordinates';
 import { getDistanceFromLatLonInKm } from 'src/utils/latLngDistance/latLngDistance';
 import { Institution } from 'src/database/entities/institution.entity';
-import { StorageProvider } from 'src/config/minio.config';
+import { PhotoService } from '../photo/photo.service';
 
 @Injectable()
 export class LodgeService {
-  private storageProvider: StorageProvider;
   constructor(
     @InjectRepository(Lodge)
     private lodgeRepository: Repository<Lodge>,
-  ) {
-    this.storageProvider = new StorageProvider();
-  }
+    private photoService: PhotoService,
+  ) {}
 
   create(lodgeDto: CreateLodgeDto & { userId: string }) {
     const lodge = lodgeDto;
@@ -90,7 +88,7 @@ export class LodgeService {
         'price',
         'createdAt',
       ],
-      relations: { institution: true, location: true },
+      relations: { institution: true, location: true, photos: true },
       take,
       skip,
     });
@@ -105,7 +103,11 @@ export class LodgeService {
   listByUserId(userId: string) {
     return this.lodgeRepository.find({
       where: { user: { id: userId } },
-      relations: { location: true, institution: true },
+      relations: {
+        location: true,
+        institution: true,
+        photos: true,
+      },
       order: { createdAt: 'desc' },
     });
   }
@@ -116,6 +118,7 @@ export class LodgeService {
       relations: {
         location: true,
         institution: { location: true },
+        photos: true,
       },
     });
   }
@@ -148,7 +151,11 @@ export class LodgeService {
 
     if (lodgeToUpdate.user.id !== userId) throw new UnauthorizedException();
 
-    const { location, institutionId, ...lodge } = updateLodgeDto;
+    const { location, institutionId, photos, ...lodge } = updateLodgeDto;
+
+    if (photos) {
+      await this.photoService.saveLodgePhotos(id, photos);
+    }
 
     return this.lodgeRepository.manager.transaction(async (manager) => {
       if (location?.id) {

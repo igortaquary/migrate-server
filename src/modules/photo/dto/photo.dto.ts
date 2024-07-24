@@ -14,7 +14,7 @@ export class PhotoDto {
   @IsString()
   @IsOptional()
   @ValidateIf((obj) => !obj.id)
-  data?: string;
+  url?: string;
 
   @ApiProperty()
   @Expose()

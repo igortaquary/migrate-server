@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StorageProvider } from 'src/config/minio.config';
 import { PhotoDto } from './dto/photo.dto';
-import { dataURLtoFile } from 'src/utils/file';
+import { dataURLtoFile, getFilename } from '../../utils/file';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class PhotoService {
@@ -23,16 +24,29 @@ export class PhotoService {
     const photoArray: Partial<Photo>[] = [...photosToEdit];
 
     for (const photoToCreate of photosToCreate) {
-      const file = dataURLtoFile(photoToCreate.data, photoToCreate.id);
-      const imgUrl = await this.storageProvider.addImage(file, 'teste.jpeg');
       const photo = this.photoRepository.create({
+        id: randomUUID(),
         lodge: { id: lodgeId },
         order: photoToCreate.order,
-        url: imgUrl,
       });
+      const file = dataURLtoFile(photoToCreate.url, photo.id);
+      const imgUrl = await this.storageProvider.addImage(
+        file,
+        getFilename(file),
+      );
+      photo.url = imgUrl;
       photoArray.push(photo);
     }
 
     return this.photoRepository.save(photoArray);
+  }
+
+  check() {
+    return this.storageProvider.init();
+  }
+
+  savePhoto(data: PhotoDto) {
+    const file = dataURLtoFile(data.url, 'teste-' + data.order);
+    return this.storageProvider.addImage(file, getFilename(file));
   }
 }

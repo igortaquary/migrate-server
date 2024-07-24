@@ -1,7 +1,41 @@
 import axios from 'axios';
+import { Client } from '@googlemaps/google-maps-services-js';
 import { Location } from 'src/database/entities/location.entity';
 
 export const getCoordinates = async (location: Partial<Location>) => {
+  if (!location) return undefined;
+  try {
+    const complete_address =
+      location.address +
+      ', ' +
+      location.district +
+      ', ' +
+      location.city +
+      ', ' +
+      location.state;
+
+    const client = new Client({});
+    const result = await client.geocode({
+      params: {
+        key: process.env.GOOGLE_MAPS_API_KEY,
+        address: complete_address,
+      },
+    });
+
+    const coords = result.data.results[0].geometry.location;
+
+    if (coords && coords.lat && coords.lng)
+      return {
+        latitude: coords.lat.toString(),
+        longitude: coords.lng.toString(),
+      };
+  } catch (err) {
+    console.error(err);
+  }
+  return {};
+};
+
+export const getCoordinatesOSM = async (location: Partial<Location>) => {
   if (!location) return undefined;
   try {
     const complete_address =
