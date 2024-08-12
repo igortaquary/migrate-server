@@ -56,7 +56,7 @@ export class LodgeController {
       ...createLodgeDto,
       userId: user.id,
     });
-    //await this.photoService.saveLodgePhotos(lodgeId, createLodgeDto.photos);
+    await this.photoService.saveLodgePhotos(lodgeId, createLodgeDto.photos);
     return { lodgeId };
   }
 
@@ -67,8 +67,8 @@ export class LodgeController {
     @Param('id') id: string,
     @Body() updateLodgeDto: UpdateLodgeDto,
   ) {
-    return this.photoService.saveLodgePhotos(id, updateLodgeDto.photos);
-    // return this.lodgeService.update(id, updateLodgeDto, user.id);
+    await this.photoService.saveLodgePhotos(id, updateLodgeDto.photos);
+    return this.lodgeService.update(id, updateLodgeDto, user.id);
   }
 
   @Delete(':id')

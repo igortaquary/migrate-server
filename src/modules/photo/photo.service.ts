@@ -16,10 +16,27 @@ export class PhotoService {
   ) {}
 
   async saveLodgePhotos(lodgeId: string, photos: PhotoDto[]) {
-    const photosToCreate = photos.filter((photo) => !photo.id);
+    /* Possíveis casos: 
+      1. Foto nova, nunca salva anteriormente
+      2. Editar ordem da foto
+      3. Apagar foto
+      4. Não fazer nada
+    */
+    const photosToCreate = photos.filter((photo) => photo.action === 'create');
     const photosToEdit = photos
-      .filter((photo) => photo.id)
+      .filter((photo) => photo.action === 'edit')
       .map((p) => ({ id: p.id, order: p.order }));
+
+    const photosToDelete = photos.filter((photo) => photo.action === 'delete');
+
+    for (const photoToDelete of photosToDelete) {
+      try {
+        await this.storageProvider.deleteImage(photoToDelete.url);
+        await this.photoRepository.delete(photoToDelete.id);
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     const photoArray: Partial<Photo>[] = [...photosToEdit];
 

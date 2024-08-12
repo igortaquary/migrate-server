@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsInt, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export class PhotoDto {
   @ApiProperty()
@@ -20,4 +20,10 @@ export class PhotoDto {
   @Expose()
   @IsInt()
   order: number;
+
+  @ApiProperty()
+  @Expose()
+  @IsString()
+  @IsIn(['create', 'edit', 'delete'])
+  action: 'create' | 'edit' | 'delete';
 }

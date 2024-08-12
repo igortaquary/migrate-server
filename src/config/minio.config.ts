@@ -57,17 +57,25 @@ export class StorageProvider {
     return this.getPublicUrl(filename);
   }
 
+  publicUrlBaseHref =
+    (process.env.MINIO_SSL === 'true' ? 'https://' : 'http://') +
+    process.env.MINIO_ENDPOINT +
+    ':' +
+    process.env.MINIO_PORT +
+    '/' +
+    process.env.MINIO_BUCKET +
+    '/';
+
   getPublicUrl(filename: string) {
-    const protocol = process.env.MINIO_SSL === 'true' ? 'https://' : 'http://';
-    return (
-      protocol +
-      process.env.MINIO_ENDPOINT +
-      ':' +
-      process.env.MINIO_PORT +
-      '/' +
-      process.env.MINIO_BUCKET +
-      '/' +
-      filename
-    );
+    return this.publicUrlBaseHref + filename;
+  }
+
+  getFilenameFromPublicUrl(url: string) {
+    return url.split(this.publicUrlBaseHref).pop();
+  }
+
+  deleteImage(imageStorageUrl: string) {
+    const filename = this.getFilenameFromPublicUrl(imageStorageUrl);
+    return this.client.removeObject(this.bucketName, filename);
   }
 }
