@@ -49,8 +49,8 @@ describe('InstitutionService', () => {
       };
 
       const mockCoords = { latitude: 1.234, longitude: 5.678 };
-      const mockLocInsertResult = { identifiers: [{ id: 1 }] };
-      const mockInstitutionInsertResult = { identifiers: [{ id: 2 }] };
+      const mockLocInsertResult = { identifiers: [{ id: '1' }] };
+      const mockInstitutionInsertResult = { identifiers: [{ id: '2' }] };
 
       (getCoordinates as jest.Mock).mockResolvedValue(mockCoords);
 

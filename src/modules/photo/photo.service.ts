@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Photo } from '../../database/entities/photo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { StorageProvider } from 'src/config/minio.config';
+import { StorageProvider } from '../../config/minio.config';
 import { PhotoDto } from './dto/photo.dto';
 import { dataURLtoFile, getFilename } from '../../utils/file';
 import { randomUUID } from 'crypto';

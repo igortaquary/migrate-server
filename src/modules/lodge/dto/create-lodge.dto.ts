@@ -15,7 +15,7 @@ import {
   DirectionMode,
   LodgeType,
   SpaceType,
-} from 'src/database/entities/lodge.entity';
+} from '../../../database/entities/lodge.entity';
 import { LocationDto } from './location.dto';
 import { Expose, Type } from 'class-transformer';
 import { PhotoDto } from '../../photo/dto/photo.dto';

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -37,6 +37,6 @@ export class UserService {
   }
 
   remove(id: string) {
-    return `This action removes a #${id} user`;
+    throw new NotImplementedException(id);
   }
 }

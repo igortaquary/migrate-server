@@ -63,7 +63,7 @@ describe('InstitutionController', () => {
 
   describe('findByState', () => {
     it('should return institutions by state', async () => {
-      const state = 'NY';
+      const state = 'DF';
       expect(await controller.findByState({ state })).toEqual([
         { id: '1', name: 'Institution 1', state },
       ]);

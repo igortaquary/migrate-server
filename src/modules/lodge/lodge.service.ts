@@ -3,25 +3,26 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+
 import { CreateLodgeDto } from './dto/create-lodge.dto';
 import { UpdateLodgeDto } from './dto/update-lodge.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Lodge, LodgeStatus } from 'src/database/entities/lodge.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
-import { paginate } from 'src/utils/paginate/paginate';
 import { SearchLodgeDto } from './dto/search-lodge.dto';
-import { Location } from 'src/database/entities/location.entity';
-import { getCoordinates } from 'src/utils/getCoordinates';
-import { getDistanceFromLatLonInKm } from 'src/utils/latLngDistance/latLngDistance';
-import { Institution } from 'src/database/entities/institution.entity';
-import { PhotoService } from '../photo/photo.service';
+
+import { paginate } from '../../utils/paginate/paginate';
+import { getCoordinates } from '../../utils/getCoordinates';
+import { getDistanceFromLatLonInKm } from '../../utils/latLngDistance/latLngDistance';
+
+import { Location } from '../../database/entities/location.entity';
+import { Lodge, LodgeStatus } from '../../database/entities/lodge.entity';
+import { Institution } from '../../database/entities/institution.entity';
 
 @Injectable()
 export class LodgeService {
   constructor(
     @InjectRepository(Lodge)
     private lodgeRepository: Repository<Lodge>,
-    private photoService: PhotoService,
   ) {}
 
   create(lodgeDto: CreateLodgeDto & { userId: string }) {
@@ -154,6 +155,7 @@ export class LodgeService {
     const { location, institutionId, ...lodge } = updateLodgeDto;
 
     return this.lodgeRepository.manager.transaction(async (manager) => {
+      // Se localização precisa ser atualizada:
       if (location?.id) {
         const coords = await getCoordinates(location);
         await manager.update(Location, location.id, { ...location, ...coords });
@@ -174,6 +176,7 @@ export class LodgeService {
           );
         }
       }
+      // fim
       return manager.save(Lodge, {
         ...lodge,
         id,

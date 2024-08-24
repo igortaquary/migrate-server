@@ -47,8 +47,9 @@ export class InstitutionService {
   }
 
   update(id: string, updateInstitutionDto: UpdateInstitutionDto) {
-    console.log(updateInstitutionDto);
-    throw new NotImplementedException();
+    throw new NotImplementedException(
+      JSON.stringify({ id, updateInstitutionDto }),
+    );
   }
 
   remove(id: string) {
