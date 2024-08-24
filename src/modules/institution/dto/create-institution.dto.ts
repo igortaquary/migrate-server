@@ -6,7 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { LocationDto } from 'src/modules/lodge/dto/location.dto';
+import { LocationDto } from '../../../modules/lodge/dto/location.dto';
 
 export class CreateInstitutionDto {
   @ApiProperty({ type: 'string' })

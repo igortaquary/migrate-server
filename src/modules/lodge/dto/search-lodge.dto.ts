@@ -8,8 +8,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { BR_STATES } from 'src/database/entities/location.entity';
-import { LodgeType, SpaceType } from 'src/database/entities/lodge.entity';
+import { BR_STATES } from '../../../database/entities/location.entity';
+import { LodgeType, SpaceType } from '../../../database/entities/lodge.entity';
 
 export class SearchLodgeDto {
   @ApiProperty({ type: 'number', required: false, default: 1 })

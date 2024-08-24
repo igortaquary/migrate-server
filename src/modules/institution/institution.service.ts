@@ -2,10 +2,10 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { UpdateInstitutionDto } from './dto/update-institution.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Institution } from 'src/database/entities/institution.entity';
+import { Institution } from '../../database/entities/institution.entity';
 import { Repository } from 'typeorm';
-import { Location } from 'src/database/entities/location.entity';
-import { getCoordinates } from 'src/utils/getCoordinates';
+import { Location } from '../../database/entities/location.entity';
+import { getCoordinates } from '../../utils/getCoordinates';
 
 @Injectable()
 export class InstitutionService {
@@ -52,7 +52,6 @@ export class InstitutionService {
   }
 
   remove(id: string) {
-    throw new NotImplementedException();
-    return `This action removes a #${id} institution`;
+    throw new NotImplementedException(id);
   }
 }

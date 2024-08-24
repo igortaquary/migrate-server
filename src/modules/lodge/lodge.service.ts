@@ -151,11 +151,7 @@ export class LodgeService {
 
     if (lodgeToUpdate.user.id !== userId) throw new UnauthorizedException();
 
-    const { location, institutionId, photos, ...lodge } = updateLodgeDto;
-
-    if (photos) {
-      await this.photoService.saveLodgePhotos(id, photos);
-    }
+    const { location, institutionId, ...lodge } = updateLodgeDto;
 
     return this.lodgeRepository.manager.transaction(async (manager) => {
       if (location?.id) {

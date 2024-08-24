@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { BR_STATES } from 'src/database/entities/location.entity';
+import { BR_STATES } from '../../../database/entities/location.entity';
 
 export class LocationDto {
   @ApiProperty()
