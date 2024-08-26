@@ -23,7 +23,6 @@ export class UserController {
 
   @Patch()
   update(@User() user: JwtData, @Body() updateUserDto: UpdateUserDto) {
-    console.log(user);
     return this.userService.update(user.id, updateUserDto);
   }
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Client } from '@googlemaps/google-maps-services-js';
-import { Location } from 'src/database/entities/location.entity';
+import { Location } from '../../database/entities/location.entity';
 
 export const getCoordinates = async (location: Partial<Location>) => {
   if (!location) return undefined;
@@ -30,13 +30,12 @@ export const getCoordinates = async (location: Partial<Location>) => {
         longitude: coords.lng.toString(),
       };
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
   return {};
 };
 
 export const getCoordinatesOSM = async (location: Partial<Location>) => {
-  if (!location) return undefined;
   try {
     const complete_address =
       location.address +
@@ -61,9 +60,9 @@ export const getCoordinatesOSM = async (location: Partial<Location>) => {
     );
     const coords = result.data[0];
     if (coords && coords.lat && coords.lon)
-      return { latitude: coords.lat, longitude: coords.lon };
+      return { latitude: `${coords.lat}`, longitude: `${coords.lon}` };
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
   return {};
 };

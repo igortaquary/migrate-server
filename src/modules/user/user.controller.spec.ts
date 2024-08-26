@@ -14,9 +14,7 @@ describe('UserController', () => {
     update: jest.fn().mockImplementation((id: string, dto: UpdateUserDto) => {
       return { id, ...dto };
     }),
-    remove: jest.fn().mockImplementation((id: string) => {
-      return { id };
-    }),
+    remove: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -48,6 +46,39 @@ describe('UserController', () => {
         name: 'User 1',
       });
       expect(service.findOne).toHaveBeenCalledWith(id);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should call userService.findOne', async () => {
+      const id = '39984';
+      expect(await controller.findOne(id)).toEqual({ id, name: 'User 1' });
+      expect(service.findOne).toHaveBeenCalledWith(id);
+    });
+  });
+
+  const jwtData = {
+    sub: '123',
+    id: '123',
+    email: 'email',
+    name: 'name',
+  };
+
+  describe('update', () => {
+    it('should call userService.update', async () => {
+      const updateUserDto = { name: 'Nome atualizado' };
+      expect(await controller.update(jwtData, updateUserDto)).toEqual({
+        id: jwtData.id,
+        ...updateUserDto,
+      });
+      expect(service.update).toHaveBeenCalledWith(jwtData.id, updateUserDto);
+    });
+  });
+
+  describe('remove', () => {
+    it('should call userService.remove', async () => {
+      expect(controller.remove(jwtData)).toBeUndefined();
+      expect(service.remove).toHaveBeenCalledWith(jwtData.id);
     });
   });
 });
