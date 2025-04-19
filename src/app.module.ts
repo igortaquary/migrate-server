@@ -13,7 +13,6 @@ import { Institution } from './database/entities/institution.entity';
 import { Lodge } from './database/entities/lodge.entity';
 import { Photo } from './database/entities/photo.entity';
 import { Location } from './database/entities/location.entity';
-import { DataSource } from 'typeorm';
 import { PhotoModule } from './modules/photo/photo.module';
 
 @Module({
@@ -30,7 +29,7 @@ import { PhotoModule } from './modules/photo/photo.module';
         database: configService.get('DB_SCHEMA'),
         entities: [User, Institution, Lodge, Photo, Location],
         synchronize: true,
-        logging: 'all',
+        logging: ['info', 'error'],
       }),
       inject: [ConfigService],
     }),
@@ -42,6 +41,4 @@ import { PhotoModule } from './modules/photo/photo.module';
   ],
   controllers: [AppController],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}

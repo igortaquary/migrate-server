@@ -21,6 +21,12 @@ export class Photo {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => Lodge, (lodge) => lodge.id)
+  @Column({ type: 'uuid' })
+  lodgeId: string;
+
+  @ManyToOne(() => Lodge, (lodge) => lodge.id, {
+    nullable: false,
+    orphanedRowAction: 'delete',
+  })
   lodge: Lodge;
 }

@@ -28,6 +28,7 @@ export class LodgeService {
   create(lodgeDto: CreateLodgeDto & { userId: string }) {
     const lodge = lodgeDto;
     const location = lodgeDto.location;
+    lodge.photos = undefined;
     lodge.location = undefined;
     return this.lodgeRepository.manager.transaction(async (manager) => {
       const coords = await getCoordinates(location);
@@ -181,6 +182,7 @@ export class LodgeService {
         ...lodge,
         id,
         institution: { id: institutionId },
+        photos: undefined,
       });
     });
   }

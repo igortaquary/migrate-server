@@ -38,12 +38,16 @@ export class PhotoService {
       }
     }
 
-    const photoArray: Partial<Photo>[] = [...photosToEdit];
+    for (const photoToEdit of photosToEdit) {
+      await this.photoRepository.update(photoToEdit.id, {
+        order: photoToEdit.order,
+      });
+    }
 
     for (const photoToCreate of photosToCreate) {
       const photo = this.photoRepository.create({
         id: randomUUID(),
-        lodge: { id: lodgeId },
+        lodgeId,
         order: photoToCreate.order,
       });
       const file = dataURLtoFile(photoToCreate.url, photo.id);
@@ -52,10 +56,8 @@ export class PhotoService {
         getFilename(file),
       );
       photo.url = imgUrl;
-      photoArray.push(photo);
+      await this.photoRepository.insert(photo);
     }
-
-    return this.photoRepository.save(photoArray);
   }
 
   check() {

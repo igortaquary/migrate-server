@@ -1,6 +1,6 @@
 services:
   api:
-    profiles: [full]
+    profiles: [ full ]
     image: migrate-api:latest
     build:
       context: .
@@ -11,11 +11,7 @@ services:
       - '.env'
       - '.docker.env'
     depends_on:
-      mysql:
-        condition: service_healthy
-        restart: true
-      minio:
-        condition: service_started
+      - mysql
 
   mysql:
     image: mysql:8.0
@@ -29,7 +25,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
     healthcheck:
-      test: ['CMD-SHELL', 'mysqladmin ping -h localhost -p${DB_PASSWORD}']
+      test: [ 'CMD-SHELL', 'mysqladmin ping -h ${DB_HOST} -p${DB_PASSWORD}' ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -45,6 +41,11 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://${MINIO_HOST}:${MINIO_PORT}/minio/health/live' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql_data:

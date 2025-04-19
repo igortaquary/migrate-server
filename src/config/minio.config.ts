@@ -5,7 +5,7 @@ export class StorageProvider {
   private client: Client;
   constructor() {
     this.client = new Client({
-      endPoint: process.env.MINIO_ENDPOINT,
+      endPoint: process.env.MINIO_HOST,
       port: Number(process.env.MINIO_PORT),
       accessKey: process.env.MINIO_ACCESS_KEY,
       secretKey: process.env.MINIO_SECRET_KEY,
@@ -59,7 +59,7 @@ export class StorageProvider {
 
   publicUrlBaseHref =
     (process.env.MINIO_SSL === 'true' ? 'https://' : 'http://') +
-    process.env.MINIO_ENDPOINT +
+    process.env.MINIO_HOST +
     ':' +
     process.env.MINIO_PORT +
     '/' +
