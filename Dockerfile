@@ -10,5 +10,4 @@ COPY . .
 
 RUN npm run build
 
-#CMD [ "sleep", "5m" ]
 CMD [ "node", "dist/src/main.js" ]

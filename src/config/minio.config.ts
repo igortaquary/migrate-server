@@ -1,5 +1,4 @@
 import { Client, DEFAULT_REGION } from 'minio';
-
 export class StorageProvider {
   private bucketName = process.env.MINIO_BUCKET;
   private client: Client;
@@ -57,21 +56,24 @@ export class StorageProvider {
     return this.getPublicUrl(filename);
   }
 
-  publicUrlBaseHref =
-    (process.env.MINIO_SSL === 'true' ? 'https://' : 'http://') +
-    process.env.MINIO_HOST +
-    ':' +
-    process.env.MINIO_PORT +
-    '/' +
-    process.env.MINIO_BUCKET +
-    '/';
+  static get publicUrlBaseHref() {
+    return (
+      (process.env.MINIO_SSL === 'true' ? 'https://' : 'http://') +
+      process.env.MINIO_HOST +
+      ':' +
+      process.env.MINIO_PORT +
+      '/' +
+      process.env.MINIO_BUCKET +
+      '/'
+    );
+  }
 
   getPublicUrl(filename: string) {
-    return this.publicUrlBaseHref + filename;
+    return StorageProvider.publicUrlBaseHref + filename;
   }
 
   getFilenameFromPublicUrl(url: string) {
-    return url.split(this.publicUrlBaseHref).pop();
+    return url.split(StorageProvider.publicUrlBaseHref).pop();
   }
 
   deleteImage(imageStorageUrl: string) {

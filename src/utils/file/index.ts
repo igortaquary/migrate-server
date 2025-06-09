@@ -10,7 +10,7 @@ export function dataURLtoFile(dataurl: string, filename: string) {
   return new File([u8arr], filename, { type: mime });
 }
 
-export function getFilename(file: File) {
+export function getFileMeta(file: File) {
   const type = [...file.type.split('/')][1] || '';
-  return file.name + '.' + type;
+  return { name: file.name + '.' + type, type };
 }

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StorageProvider } from '../../config/minio.config';
 import { PhotoDto } from './dto/photo.dto';
-import { dataURLtoFile, getFilename } from '../../utils/file';
+import { dataURLtoFile, getFileMeta } from '../../utils/file';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -51,11 +51,11 @@ export class PhotoService {
         order: photoToCreate.order,
       });
       const file = dataURLtoFile(photoToCreate.url, photo.id);
-      const imgUrl = await this.storageProvider.addImage(
-        file,
-        getFilename(file),
-      );
-      photo.url = imgUrl;
+      //const imgUrl =
+      const fileMeta = getFileMeta(file);
+      await this.storageProvider.addImage(file, fileMeta.name);
+      //photo.url = imgUrl;
+      photo.type = fileMeta.type;
       await this.photoRepository.insert(photo);
     }
   }
@@ -66,6 +66,6 @@ export class PhotoService {
 
   savePhoto(data: PhotoDto) {
     const file = dataURLtoFile(data.url, 'teste-' + data.order);
-    return this.storageProvider.addImage(file, getFilename(file));
+    return this.storageProvider.addImage(file, getFileMeta(file).name);
   }
 }
