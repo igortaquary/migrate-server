@@ -55,4 +55,11 @@ export class SearchLodgeDto {
   @IsNotEmpty()
   @IsOptional()
   institutionId?: string;
+
+  @ApiProperty({ type: 'string', required: false })
+  @IsOptional()
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  textSearch?: string;
 }

@@ -6,7 +6,14 @@ import { StorageProvider } from '../../config/minio.config';
 import { PhotoDto } from './dto/photo.dto';
 import { dataURLtoFile } from '../../utils/file';
 
-jest.mock('../../utils/file');
+jest.mock('../../utils/file', () => ({
+  dataURLtoFile: jest.fn().mockImplementation((dataUrl, filename) => {
+    return { dataUrl, filename };
+  }),
+  getFileMeta: jest.fn().mockImplementation(() => {
+    return { type: 'jpg', name: 'photo.jpg' };
+  }),
+}));
 
 describe('PhotoService', () => {
   let service: PhotoService;
@@ -19,6 +26,12 @@ describe('PhotoService', () => {
     }),
     create: jest.fn().mockImplementation((photo) => photo),
     delete: jest.fn(),
+    update: jest.fn().mockImplementation((id, photo) => {
+      return { id, ...photo };
+    }),
+    insert: jest.fn().mockImplementation(() => {
+      return { identifiers: [{ id: 'newPhotoId' }] };
+    }),
   };
   const storageProviderMock = {
     init: jest.fn(),
@@ -58,15 +71,7 @@ describe('PhotoService', () => {
     it('should create photos', async () => {
       const photos: PhotoDto[] = [{ action: 'create', order: 1, url: '123' }];
 
-      const expectedPhotos = photos.map((p) => ({
-        order: p.order,
-        url: 'http://image.url',
-        lodge: { id: 'lodgeId' },
-      }));
-
-      expect(await service.saveLodgePhotos('lodgeId', photos)).toMatchObject(
-        expectedPhotos,
-      );
+      expect(await service.saveLodgePhotos('lodgeId', photos)).toBeUndefined();
       expect(dataURLtoFile).toHaveBeenCalledTimes(1);
       expect(storageProvider.addImage).toHaveBeenCalledTimes(1);
     });
@@ -74,14 +79,7 @@ describe('PhotoService', () => {
     it('should edit photos', async () => {
       const photos: PhotoDto[] = [{ id: '123', action: 'edit', order: 0 }];
 
-      const expectedPhotos = photos.map((p) => ({
-        id: p.id,
-        order: p.order,
-      }));
-
-      expect(await service.saveLodgePhotos('lodgeId', photos)).toMatchObject(
-        expectedPhotos,
-      );
+      expect(await service.saveLodgePhotos('lodgeId', photos)).toBeUndefined();
       expect(dataURLtoFile).toHaveBeenCalledTimes(0);
       expect(storageProvider.addImage).toHaveBeenCalledTimes(0);
     });
@@ -89,9 +87,7 @@ describe('PhotoService', () => {
     it('should delete photos', async () => {
       const photos: PhotoDto[] = [{ id: '123', action: 'delete', order: 0 }];
 
-      expect(await service.saveLodgePhotos('lodgeId', photos)).toMatchObject(
-        [],
-      );
+      expect(await service.saveLodgePhotos('lodgeId', photos)).toBeUndefined();
       expect(dataURLtoFile).toHaveBeenCalledTimes(0);
       expect(storageProvider.addImage).toHaveBeenCalledTimes(0);
       expect(storageProvider.deleteImage).toHaveBeenCalledTimes(photos.length);

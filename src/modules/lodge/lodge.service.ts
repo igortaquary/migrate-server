@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateLodgeDto } from './dto/create-lodge.dto';
 import { UpdateLodgeDto } from './dto/update-lodge.dto';
@@ -65,21 +65,48 @@ export class LodgeService {
     institutionId,
     type,
     state,
+    textSearch,
   }: SearchLodgeDto) {
     const take = 10;
     const skip = (page - 1) * take;
 
-    const whereOptions: FindOptionsWhere<Lodge> = {
+    /* const whereOptions: FindOptionsWhere<Lodge> = {
       status: LodgeStatus.ACTIVE,
-    };
+    }; */
 
-    if (gender) whereOptions.gender = gender;
-    if (space) whereOptions.space = space;
-    if (type) whereOptions.type = type;
-    if (institutionId) whereOptions.institution = { id: institutionId };
-    if (state) whereOptions.location = { state };
+    const lodgeQuery = this.lodgeRepository
+      .createQueryBuilder('lodge')
+      .leftJoinAndSelect('lodge.institution', 'institution')
+      .leftJoinAndSelect('lodge.location', 'location')
+      .leftJoinAndSelect('lodge.photos', 'photos')
+      .where('lodge.status = :status', { status: LodgeStatus.ACTIVE });
 
-    const [data, count] = await this.lodgeRepository.findAndCount({
+    if (textSearch) {
+      textSearch = textSearch?.trim();
+      lodgeQuery
+        .andWhere('lodge.title LIKE :textSearch', {
+          textSearch: `%${textSearch}%`,
+        })
+        .orWhere('lodge.description LIKE :textSearch', {
+          textSearch: `%${textSearch}%`,
+        });
+    }
+    if (gender) lodgeQuery.andWhere('lodge.gender = :gender', { gender });
+    if (space) lodgeQuery.andWhere('lodge.space = :space', { space });
+    if (type) lodgeQuery.andWhere('lodge.type = :type', { type });
+    if (institutionId)
+      lodgeQuery.andWhere('lodge.institution = :institutionId', {
+        institutionId,
+      });
+    if (state) lodgeQuery.andWhere('lodge.location.state = :state', { state });
+
+    const [data, count] = await lodgeQuery
+      .orderBy('lodge.createdAt', 'DESC')
+      .take(take)
+      .skip(skip)
+      .getManyAndCount();
+
+    /* const [data, count] = await this.lodgeRepository.findAndCount({
       where: whereOptions,
       select: [
         'id',
@@ -93,7 +120,8 @@ export class LodgeService {
       relations: { institution: true, location: true, photos: true },
       take,
       skip,
-    });
+    }); */
+
     return paginate({
       page,
       count,

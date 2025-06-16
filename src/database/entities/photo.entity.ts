@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Lodge } from './lodge.entity';
-import { StorageProvider } from 'src/config/minio.config';
+import { StorageProvider } from '../../config/minio.config';
 
 @Entity()
 export class Photo {

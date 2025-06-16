@@ -29,6 +29,18 @@ const mockLodgeRepository = {
   manager: {
     transaction: jest.fn(),
   },
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn().mockReturnValueOnce([[], 0]),
+  })),
 };
 
 describe('LodgeService', () => {
