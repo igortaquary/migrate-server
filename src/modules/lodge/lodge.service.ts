@@ -70,12 +70,17 @@ export class LodgeService {
     const take = 10;
     const skip = (page - 1) * take;
 
-    /* const whereOptions: FindOptionsWhere<Lodge> = {
-      status: LodgeStatus.ACTIVE,
-    }; */
-
     const lodgeQuery = this.lodgeRepository
       .createQueryBuilder('lodge')
+      .select([
+        'lodge.id',
+        'lodge.type',
+        'lodge.title',
+        'lodge.description',
+        'lodge.gender',
+        'lodge.price',
+        'lodge.createdAt',
+      ])
       .leftJoinAndSelect('lodge.institution', 'institution')
       .leftJoinAndSelect('lodge.location', 'location')
       .leftJoinAndSelect('lodge.photos', 'photos')
@@ -83,13 +88,10 @@ export class LodgeService {
 
     if (textSearch) {
       textSearch = textSearch?.trim();
-      lodgeQuery
-        .andWhere('lodge.title LIKE :textSearch', {
-          textSearch: `%${textSearch}%`,
-        })
-        .orWhere('lodge.description LIKE :textSearch', {
-          textSearch: `%${textSearch}%`,
-        });
+      lodgeQuery.andWhere(
+        '(lodge.title LIKE :textSearch OR lodge.description LIKE :textSearch)',
+        { textSearch: `%${textSearch}%` },
+      );
     }
     if (gender) lodgeQuery.andWhere('lodge.gender = :gender', { gender });
     if (space) lodgeQuery.andWhere('lodge.space = :space', { space });
@@ -98,29 +100,13 @@ export class LodgeService {
       lodgeQuery.andWhere('lodge.institution = :institutionId', {
         institutionId,
       });
-    if (state) lodgeQuery.andWhere('lodge.location.state = :state', { state });
+    if (state) lodgeQuery.andWhere('location.state = :state', { state });
 
     const [data, count] = await lodgeQuery
       .orderBy('lodge.createdAt', 'DESC')
       .take(take)
       .skip(skip)
       .getManyAndCount();
-
-    /* const [data, count] = await this.lodgeRepository.findAndCount({
-      where: whereOptions,
-      select: [
-        'id',
-        'type',
-        'title',
-        'description',
-        'gender',
-        'price',
-        'createdAt',
-      ],
-      relations: { institution: true, location: true, photos: true },
-      take,
-      skip,
-    }); */
 
     return paginate({
       page,
